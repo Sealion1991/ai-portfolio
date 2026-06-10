@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="田中蒼空のAI開発ポートフォリオ。Claude API・LangChain・RAGなどAIを活用したプロダクト開発の成果物をまとめています。">
+<meta property="og:title" content="蒼空.ai — AI Developer Portfolio">
+<meta property="og:description" content="Claude API・画像生成・RAGなど、AIを使ったプロダクト開発の成果物">
+<meta property="og:type" content="website">
+<title>蒼空.ai — AI Developer Portfolio</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0c;
+  --bg2:#111114;
+  --bg3:#18181d;
+  --bg4:#1e1e25;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --text:#eeeef2;
+  --muted:#7a7a8a;
+  --muted2:#555560;
+  --accent:#7c6fef;
+  --accent-dim:rgba(124,111,239,0.15);
+  --accent-border:rgba(124,111,239,0.35);
+  --teal:#3ecfa0;
+  --teal-dim:rgba(62,207,160,0.12);
+  --coral:#f87c52;
+  --coral-dim:rgba(248,124,82,0.12);
+  --radius:12px;
+  --radius-lg:18px;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* FADE-IN ANIMATION */
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:none}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(1.5rem,5vw,3rem);
+  height:56px;
+  background:rgba(10,10,12,0.75);
+  backdrop-filter:blur(16px);
+  border-bottom:0.5px solid var(--border);
+}
+.nav-logo{
+  font-size:15px;font-weight:700;letter-spacing:-0.02em;
+  text-decoration:none;color:var(--text);
+}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--muted);font-size:13px;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{
+  font-size:12px;padding:7px 16px;border-radius:100px;
+  background:var(--accent-dim);border:0.5px solid var(--accent-border);
+  color:var(--accent);text-decoration:none;transition:all .2s;
+}
+.nav-cta:hover{background:var(--accent);color:#fff;border-color:transparent}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:7rem clamp(1.5rem,5vw,3rem) 5rem;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);
+}
+.hero-orb-1{
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(124,111,239,0.18) 0%,transparent 70%);
+  top:-100px;left:50%;transform:translateX(-50%);
+}
+.hero-orb-2{
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(62,207,160,0.1) 0%,transparent 70%);
+  bottom:-50px;right:-100px;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;color:var(--teal);
+  border:0.5px solid rgba(62,207,160,0.3);
+  border-radius:100px;padding:5px 14px;margin-bottom:1.8rem;
+  background:var(--teal-dim);letter-spacing:0.04em;
+  animation:fadeDown .7s ease both;
+}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+h1{
+  font-size:clamp(2.8rem,7vw,5rem);
+  font-weight:800;letter-spacing:-0.04em;line-height:1.1;
+  margin-bottom:1.4rem;
+  animation:fadeUp .7s .15s ease both;
+}
+h1 .accent{
+  background:linear-gradient(135deg,var(--accent) 0%,#a78bfa 50%,var(--teal) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(0.95rem,2vw,1.1rem);
+  color:var(--muted);max-width:520px;margin:0 auto 2.5rem;line-height:1.75;
+  animation:fadeUp .7s .25s ease both;
+}
+.hero-actions{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .7s .35s ease both;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 24px;border-radius:100px;
+  font-size:13px;font-weight:500;cursor:pointer;
+  text-decoration:none;border:none;transition:all .2s;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#6a5fdf;transform:translateY(-1px)}
+.btn-outline{
+  background:transparent;color:var(--text);
+  border:0.5px solid var(--border2);
+}
+.btn-outline:hover{background:var(--bg3);border-color:var(--border2)}
+.hero-stats{
+  display:flex;gap:clamp(1.5rem,4vw,3.5rem);
+  margin-top:4.5rem;padding-top:2.5rem;
+  border-top:0.5px solid var(--border);
+  animation:fadeUp .7s .45s ease both;
+}
+.stat-val{font-size:2rem;font-weight:800;letter-spacing:-0.03em}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.06em;text-transform:uppercase}
+
+/* ── SECTION COMMON ── */
+.section-wrap{padding:6rem clamp(1.5rem,5vw,3rem);max-width:1140px;margin:0 auto}
+.section-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;
+}
+.section-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.section-title{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:700;letter-spacing:-0.025em;margin-bottom:.6rem}
+.section-sub{color:var(--muted);font-size:.95rem;margin-bottom:2.8rem;max-width:560px}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.about-text p{color:var(--muted);line-height:1.85;margin-bottom:1rem;font-size:.95rem}
+.about-text a{color:var(--accent);text-decoration:none}
+.skills-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.2rem}
+.skill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;padding:6px 13px;border-radius:100px;
+  border:0.5px solid var(--border2);color:var(--muted);
+  background:var(--bg3);transition:all .2s;
+}
+.skill:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-dim)}
+.skill.hot{border-color:var(--accent-border);color:var(--accent);background:var(--accent-dim)}
+.skill.green{border-color:rgba(62,207,160,0.3);color:var(--teal);background:var(--teal-dim)}
+.skill-dot{width:5px;height:5px;border-radius:50%}
+.skill.hot .skill-dot{background:var(--accent)}
+.skill.green .skill-dot{background:var(--teal)}
+
+/* ── PROJECTS ── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem}
+.filter-btn{
+  font-size:12px;padding:6px 16px;border-radius:100px;
+  border:0.5px solid var(--border2);color:var(--muted);
+  background:transparent;cursor:pointer;transition:all .2s;
+}
+.filter-btn.active,.filter-btn:hover{
+  background:var(--accent);color:#fff;border-color:transparent;
+}
+
+.bento{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.card{
+  background:var(--bg2);
+  border:0.5px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  cursor:pointer;
+  transition:border-color .25s,transform .25s,box-shadow .25s;
+  position:relative;
+}
+.card::after{
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
+  background:linear-gradient(135deg,rgba(124,111,239,0.06) 0%,transparent 60%);
+  opacity:0;transition:opacity .25s;pointer-events:none;
+}
+.card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.card:hover::after{opacity:1}
+.card.wide{grid-column:span 2}
+
+/* CARD THUMB */
+.card-thumb{
+  width:100%;aspect-ratio:16/9;
+  background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:0.5px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.card.wide .card-thumb{aspect-ratio:21/9}
+
+/* mock UIs */
+.mock{position:absolute;inset:0;padding:12px;display:flex;flex-direction:column;gap:6px}
+.mock-bar{height:7px;border-radius:4px;background:rgba(255,255,255,0.07)}
+.mock-block{border-radius:6px;background:rgba(255,255,255,0.04);flex:1}
+.mock-chat{gap:8px}
+.mock-msg{
+  border-radius:9px;padding:7px 11px;
+  font-size:10px;color:rgba(255,255,255,0.35);
+  max-width:72%;line-height:1.4;
+}
+.mock-msg.r{align-self:flex-end;background:rgba(124,111,239,0.22)}
+.mock-msg.l{background:rgba(255,255,255,0.07)}
+.mock-code{
+  background:rgba(0,0,0,0.4);border-radius:6px;padding:8px;
+  font-size:9px;color:rgba(255,255,255,0.3);font-family:monospace;line-height:1.6;flex:1;
+}
+.mock-imgs{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:1;
+}
+.mock-img{border-radius:6px;background:rgba(255,255,255,0.06)}
+.mock-img.teal{background:rgba(62,207,160,0.15)}
+.mock-img.coral{background:rgba(248,124,82,0.12)}
+.mock-img.purple{background:rgba(124,111,239,0.15)}
+.mock-table{
+  background:rgba(0,0,0,0.3);border-radius:6px;overflow:hidden;flex:1;
+}
+.mock-tr{
+  display:flex;gap:6px;padding:5px 8px;font-size:9px;
+  color:rgba(255,255,255,0.25);border-bottom:0.5px solid rgba(255,255,255,0.05);
+}
+.mock-tr.head{background:rgba(255,255,255,0.04);font-size:8px;color:rgba(255,255,255,0.4)}
+.mock-td{flex:1}
+
+/* ACCENT STRIPE */
+.stripe{position:absolute;bottom:0;left:0;right:0;height:2px}
+.stripe-accent{background:linear-gradient(90deg,var(--accent),#a78bfa)}
+.stripe-teal{background:linear-gradient(90deg,var(--teal),#60efbc)}
+.stripe-coral{background:linear-gradient(90deg,var(--coral),#fcb99c)}
+
+/* CARD BODY */
+.card-body{padding:1rem 1.1rem}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.card-tag{
+  font-size:10px;padding:2px 9px;border-radius:100px;
+  border:0.5px solid var(--border2);color:var(--muted2);
+}
+.card-tag.p{border-color:rgba(124,111,239,0.3);color:var(--accent)}
+.card-tag.t{border-color:rgba(62,207,160,0.3);color:var(--teal)}
+.card-tag.o{border-color:rgba(248,124,82,0.3);color:var(--coral)}
+.card-name{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.35}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* CARD HIDDEN (filtered) */
+.card.hidden{display:none}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{
+  content:'';position:absolute;left:6px;top:6px;bottom:6px;
+  width:1px;background:linear-gradient(to bottom,var(--accent),var(--teal),transparent);
+  opacity:.4;
+}
+.tl-item{position:relative;margin-bottom:2.5rem}
+.tl-dot{
+  position:absolute;left:-2rem;top:4px;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--bg3);border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+}
+.tl-dot::after{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.tl-date{font-size:11px;color:var(--accent);margin-bottom:4px;font-weight:600;letter-spacing:0.06em}
+.tl-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.tl-desc{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* ── CONTACT ── */
+#contact-wrap{border-top:0.5px solid var(--border);background:var(--bg)}
+.contact-inner{max-width:1140px;margin:0 auto;padding:6rem clamp(1.5rem,5vw,3rem)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.contact-links{display:flex;flex-direction:column;gap:10px;margin-top:1.5rem}
+.contact-link{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 18px;border-radius:var(--radius);
+  border:0.5px solid var(--border);color:var(--text);
+  text-decoration:none;background:var(--bg2);
+  transition:all .2s;font-size:13px;
+}
+.contact-link:hover{border-color:var(--accent-border);background:var(--accent-dim);color:var(--accent)}
+.contact-link-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--bg4);display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.contact-link-text .link-name{font-weight:500;font-size:13px}
+.contact-link-text .link-desc{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* PROFILE CARD */
+.profile-card{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.5rem;
+}
+.profile-avatar{
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;margin-bottom:1rem;
+  color:#fff;
+}
+.profile-name{font-size:18px;font-weight:700;letter-spacing:-0.02em}
+.profile-role{font-size:13px;color:var(--muted);margin-top:3px;margin-bottom:1.2rem}
+.profile-badges{display:flex;flex-wrap:wrap;gap:6px}
+.profile-badge{
+  font-size:11px;padding:3px 10px;border-radius:100px;
+  background:var(--bg4);border:0.5px solid var(--border2);color:var(--muted);
+}
+
+/* FOOTER */
+footer{
+  text-align:center;padding:1.5rem;
+  color:var(--muted2);font-size:12px;
+  border-top:0.5px solid var(--border);
+}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+
+/* SCROLL TO TOP */
+.top-btn{
+  position:fixed;bottom:2rem;right:2rem;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--bg3);border:0.5px solid var(--border2);
+  color:var(--muted);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;opacity:0;pointer-events:none;z-index:50;
+}
+.top-btn.show{opacity:1;pointer-events:auto}
+.top-btn:hover{background:var(--accent);border-color:transparent;color:#fff}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .card.wide{grid-column:span 2}
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .hero-stats{gap:2rem}
+}
+@media(max-width:600px){
+  .bento{grid-template-columns:1fr}
+  .card.wide{grid-column:span 1}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">蒼空<span>.ai</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">連絡する</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+  </div>
+
+  <div class="hero-badge">AI Developer — 開発実績公開中</div>
+
+  <h1>AIで<span class="accent">未来</span>を<br>プロトタイプする</h1>
+
+  <p class="hero-sub">
+    Claude API・LangChain・RAGなど、最前線のAI技術を使って<br>
+    アイデアを動くプロダクトに変えています。
+  </p>
+
+  <div class="hero-actions">
+    <a href="#projects" class="btn btn-primary">成果物を見る →</a>
+    <a href="#about" class="btn btn-outline">About me</a>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-val">12<span style="color:var(--accent);font-size:1.2rem">+</span></div>
+      <div class="stat-label">Projects</div>
+    </div>
+    <div>
+      <div class="stat-val">5<span style="color:var(--teal);font-size:1.2rem">+</span></div>
+      <div class="stat-label">AI Tools</div>
+    </div>
+    <div>
+      <div class="stat-val">2025</div>
+      <div class="stat-label">開始年</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section-wrap">
+  <div class="fade-in">
+    <div class="section-tag">About</div>
+    <h2 class="section-title">自己紹介</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>AIツールを使ったプロダクト開発・実験を行っています。LLMのAPIを直接触ることから、画像生成・RAGシステム・エージェント構築まで幅広く取り組んでいます。</p>
+        <p>特に <strong style="color:var(--text)">Claude API</strong> を使ったアプリ開発と、成果物をスクリーンショットで丁寧に記録することに力を入れています。</p>
+        <p>「動くものを作って見せる」をモットーに、毎週新しいAIプロダクトを試作しています。</p>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;letter-spacing:0.06em;text-transform:uppercase">Tech Stack</div>
+        <div class="skills-grid">
+          <span class="skill hot"><span class="skill-dot"></span>Claude API</span>
+          <span class="skill hot"><span class="skill-dot"></span>LangChain</span>
+          <span class="skill hot"><span class="skill-dot"></span>Prompt Engineering</span>
+          <span class="skill green"><span class="skill-dot"></span>RAG</span>
+          <span class="skill green"><span class="skill-dot"></span>Vector DB</span>
+          <span class="skill green"><span class="skill-dot"></span>Stable Diffusion</span>
+          <span class="skill">Python</span>
+          <span class="skill">Next.js</span>
+          <span class="skill">TypeScript</span>
+          <span class="skill">Vercel</span>
+          <span class="skill">FastAPI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="section-wrap" style="padding-top:2rem">
+  <div class="fade-in">
+    <div class="section-tag">Projects</div>
+    <h2 class="section-title">AI成果物ギャラリー</h2>
+    <p class="section-sub">Claude APIをはじめとするAIツールで作った成果物のスクリーンショットまとめ。</p>
+
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-filter="all">すべて</button>
+      <button class="filter-btn" data-filter="chatbot">チャットbot</button>
+      <button class="filter-btn" data-filter="image">画像生成</button>
+      <button class="filter-btn" data-filter="rag">RAG</button>
+      <button class="filter-btn" data-filter="agent">エージェント</button>
+      <button class="filter-btn" data-filter="automation">自動化</button>
+    </div>
+
+    <div class="bento" id="bentoGrid">
+
+      <!-- 1: RAG chatbot — WIDE -->
+      <div class="card wide" data-category="chatbot rag">
+        <div class="card-thumb">
+          <div class="mock mock-chat">
+            <div class="mock-msg l">こんにちは！社内ドキュメントについて何でも聞いてください。</div>
+            <div class="mock-msg r">Q3の売上レポートを要約して</div>
+            <div class="mock-msg l">Q3売上レポートを3件のドキュメントから検索しました。主なポイント：① 前年比 +23%…</div>
+            <div class="mock-msg r">競合比較も追加してください</div>
+            <div class="mock-msg l">競合データを追加しました。詳細はこちら…</div>
+          </div>
+          <div class="stripe stripe-accent"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag p">Claude API</span>
+            <span class="card-tag t">RAG</span>
+            <span class="card-tag t">Vector DB</span>
+            <span class="card-tag">Python</span>
+            <span class="card-tag">FastAPI</span>
+          </div>
+          <div class="card-name">社内ドキュメント RAGチャットbot</div>
+          <div class="card-desc">社内PDFをChromaDBでベクトル化し、Claude APIで自然言語質疑応答。ハイブリッド検索で精度向上。</div>
+        </div>
+      </div>
+
+      <!-- 2: Image generation -->
+      <div class="card" data-category="image">
+        <div class="card-thumb">
+          <div class="mock">
+            <div class="mock-imgs">
+              <div class="mock-img teal"></div>
+              <div class="mock-img coral"></div>
+              <div class="mock-img purple"></div>
+              <div class="mock-img purple"></div>
+              <div class="mock-img teal"></div>
+              <div class="mock-img coral"></div>
+            </div>
+          </div>
+          <div class="stripe stripe-teal"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag t">画像生成</span>
+            <span class="card-tag">ComfyUI</span>
+            <span class="card-tag">SDXL</span>
+          </div>
+          <div class="card-name">プロンプト→バリエーション生成</div>
+          <div class="card-desc">テキストプロンプトから6スタイルの画像を一括生成するComfyUIワークフロー。</div>
+        </div>
+      </div>
+
+      <!-- 3: SEO article automation -->
+      <div class="card" data-category="automation">
+        <div class="card-thumb">
+          <div class="mock" style="gap:5px">
+            <div class="mock-bar" style="width:55%"></div>
+            <div class="mock-bar" style="width:90%"></div>
+            <div class="mock-bar" style="width:80%"></div>
+            <div class="mock-block"></div>
+            <div style="display:flex;gap:6px">
+              <div class="mock-bar" style="width:30%;flex-shrink:0"></div>
+              <div class="mock-bar" style="flex:1"></div>
+            </div>
+          </div>
+          <div class="stripe stripe-accent"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag p">Claude API</span>
+            <span class="card-tag o">自動化</span>
+          </div>
+          <div class="card-name">SEO記事自動生成パイプライン</div>
+          <div class="card-desc">競合分析→アウトライン設計→本文執筆を一気通貫で自動化。毎日5記事生成中。</div>
+        </div>
+      </div>
+
+      <!-- 4: Multi-agent -->
+      <div class="card" data-category="agent">
+        <div class="card-thumb">
+          <div class="mock" style="gap:6px">
+            <div style="display:flex;gap:6px;flex:1">
+              <div style="flex:1;border-radius:8px;background:rgba(124,111,239,0.12);border:0.5px solid rgba(124,111,239,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(124,111,239,0.7)">Researcher</div>
+              <div style="flex:1;border-radius:8px;background:rgba(62,207,160,0.1);border:0.5px solid rgba(62,207,160,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(62,207,160,0.7)">Writer</div>
+            </div>
+            <div style="display:flex;gap:6px;flex:1">
+              <div style="flex:1;border-radius:8px;background:rgba(248,124,82,0.1);border:0.5px solid rgba(248,124,82,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(248,124,82,0.7)">Critic</div>
+              <div style="flex:1;border-radius:8px;background:rgba(255,255,255,0.05);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted2)">Editor</div>
+            </div>
+          </div>
+          <div class="stripe stripe-coral"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag o">マルチエージェント</span>
+            <span class="card-tag">LangChain</span>
+          </div>
+          <div class="card-name">4-Agent リサーチシステム</div>
+          <div class="card-desc">Researcher・Writer・Critic・Editorが分業してレポートを自動生成するエージェントシステム。</div>
+        </div>
+      </div>
+
+      <!-- 5: Vision chatbot -->
+      <div class="card" data-category="chatbot">
+        <div class="card-thumb">
+          <div class="mock mock-chat">
+            <div class="mock-msg l" style="max-width:100%">画像をアップロードしてください</div>
+            <div style="align-self:flex-end;width:55px;height:55px;border-radius:8px;background:rgba(255,255,255,0.07);flex-shrink:0"></div>
+            <div class="mock-msg l">この画像には3つの主要な要素が含まれています。①グラフ ②テーブル ③注釈…</div>
+          </div>
+          <div class="stripe stripe-teal"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag p">Vision API</span>
+            <span class="card-tag p">Claude</span>
+          </div>
+          <div class="card-name">画像解析チャットアプリ</div>
+          <div class="card-desc">画像をアップロードして日本語で質疑応答できるVisionアプリ。図・グラフ・表の読み取りに強い。</div>
+        </div>
+      </div>
+
+      <!-- 6: Data analysis -->
+      <div class="card" data-category="automation">
+        <div class="card-thumb">
+          <div class="mock" style="gap:5px">
+            <div class="mock-table">
+              <div class="mock-tr head"><div class="mock-td">日付</div><div class="mock-td">売上</div><div class="mock-td">前比</div></div>
+              <div class="mock-tr"><div class="mock-td">6/1</div><div class="mock-td">¥120k</div><div class="mock-td" style="color:rgba(62,207,160,0.6)">+12%</div></div>
+              <div class="mock-tr"><div class="mock-td">6/2</div><div class="mock-td">¥98k</div><div class="mock-td" style="color:rgba(248,124,82,0.6)">-8%</div></div>
+              <div class="mock-tr"><div class="mock-td">6/3</div><div class="mock-td">¥145k</div><div class="mock-td" style="color:rgba(62,207,160,0.6)">+18%</div></div>
+            </div>
+          </div>
+          <div class="stripe stripe-accent"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag p">Claude API</span>
+            <span class="card-tag o">分析</span>
+            <span class="card-tag">Python</span>
+          </div>
+          <div class="card-name">CSVデータ自動分析ツール</div>
+          <div class="card-desc">CSVをアップするだけでAIがトレンド分析・異常検知・サマリーを自動生成。</div>
+        </div>
+      </div>
+
+      <!-- 7: Meeting summarizer — WIDE -->
+      <div class="card wide" data-category="automation">
+        <div class="card-thumb">
+          <div class="mock" style="flex-direction:row;gap:12px">
+            <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+              <div class="mock-bar" style="width:60%"></div>
+              <div class="mock-bar" style="width:90%"></div>
+              <div class="mock-bar" style="width:75%"></div>
+              <div class="mock-block"></div>
+            </div>
+            <div style="width:1px;background:var(--border);flex-shrink:0"></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+              <div style="font-size:9px;color:rgba(62,207,160,0.7);padding:4px 8px;background:var(--teal-dim);border-radius:4px">✓ アクションアイテム 3件</div>
+              <div style="font-size:9px;color:rgba(124,111,239,0.7);padding:4px 8px;background:var(--accent-dim);border-radius:4px">決定事項 2件</div>
+              <div style="font-size:9px;color:var(--muted2);padding:4px 8px;background:rgba(255,255,255,0.04);border-radius:4px">次回MTG: 6/17</div>
+            </div>
+          </div>
+          <div class="stripe stripe-teal"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag p">Whisper</span>
+            <span class="card-tag p">Claude API</span>
+            <span class="card-tag t">自動化</span>
+            <span class="card-tag">Python</span>
+          </div>
+          <div class="card-name">議事録自動化パイプライン（音声→要約→アクションアイテム）</div>
+          <div class="card-desc">Whisperで文字起こし→Claudeで構造化要約→Notionに自動書き出しまでをワンクリックで完結。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline" class="section-wrap" style="padding-top:2rem">
+  <div class="fade-in">
+    <div class="section-tag">Timeline</div>
+    <h2 class="section-title">学習ロードマップ</h2>
+    <p class="section-sub">AI開発をはじめてから現在までの歩み。</p>
+    <div class="timeline">
+      <div class="tl-item fade-in">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025.01</div>
+        <div class="tl-title">Claude APIで初めてのチャットbotを構築</div>
+        <div class="tl-desc">APIの基礎を学び、シンプルな会話AIをPythonで実装。プロンプトエンジニアリングの重要性を実感。</div>
+      </div>
+      <div class="tl-item fade-in">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025.03</div>
+        <div class="tl-title">RAGシステムの構築に挑戦</div>
+        <div class="tl-desc">LangChain + ChromaDBで社内ドキュメント検索システムを構築。ベクトル検索の仕組みを理解。</div>
+      </div>
+      <div class="tl-item fade-in">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025.05</div>
+        <div class="tl-title">マルチエージェントシステム開発</div>
+        <div class="tl-desc">複数のAIエージェントが協調してタスクを実行する仕組みを実装。研究・執筆・レビューを自動化。</div>
+      </div>
+      <div class="tl-item fade-in">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025.06〜</div>
+        <div class="tl-title">ポートフォリオ公開・継続発信</div>
+        <div class="tl-desc">成果物をGitHub Pagesで公開。毎週新しいAIプロダクトを試作してアップデート中。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div id="contact" id="contact-wrap">
+  <div class="contact-inner">
+    <div class="fade-in">
+      <div class="section-tag">Contact</div>
+      <h2 class="section-title">連絡先</h2>
+      <p class="section-sub">お仕事のご相談・コラボのご提案・質問など、お気軽にどうぞ。</p>
+      <div class="contact-grid">
+        <div>
+          <div class="contact-links">
+            <a href="mailto:sora@example.com" class="contact-link">
+              <div class="contact-link-icon">✉</div>
+              <div class="contact-link-text">
+                <div class="link-name">Email</div>
+                <div class="link-desc">sora@example.com</div>
+              </div>
+            </a>
+            <a href="https://github.com/Sealion1991" target="_blank" rel="noopener" class="contact-link">
+              <div class="contact-link-icon">⌥</div>
+              <div class="contact-link-text">
+                <div class="link-name">GitHub</div>
+                <div class="link-desc">github.com/Sealion1991</div>
+              </div>
+            </a>
+            <a href="#" class="contact-link">
+              <div class="contact-link-icon">𝕏</div>
+              <div class="contact-link-text">
+                <div class="link-name">X (Twitter)</div>
+                <div class="link-desc">@sora_ai_dev</div>
+              </div>
+            </a>
+            <a href="#" class="contact-link">
+              <div class="contact-link-icon">📝</div>
+              <div class="contact-link-text">
+                <div class="link-name">Zenn</div>
+                <div class="link-desc">技術記事を定期更新中</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="profile-card">
+          <div class="profile-avatar">蒼</div>
+          <div class="profile-name">田中 蒼空</div>
+          <div class="profile-role">AI Developer / Prototyper</div>
+          <div class="profile-badges">
+            <span class="profile-badge">Claude API</span>
+            <span class="profile-badge">LangChain</span>
+            <span class="profile-badge">RAG</span>
+            <span class="profile-badge">Python</span>
+            <span class="profile-badge">Next.js</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 田中 蒼空 — Built with Claude Code &nbsp;·&nbsp; <a href="https://github.com/Sealion1991/ai-portfolio">GitHub</a></p>
+</footer>
+
+<button class="top-btn" id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Scroll-triggered fade-in
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Filter buttons
+document.getElementById('filterBar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filter = btn.dataset.filter;
+  document.querySelectorAll('#bentoGrid .card').forEach(card => {
+    const cats = card.dataset.category || '';
+    card.classList.toggle('hidden', filter !== 'all' && !cats.includes(filter));
+  });
+});
+
+// Scroll to top button
+window.addEventListener('scroll', () => {
+  document.getElementById('topBtn').classList.toggle('show', window.scrollY > 400);
+});
+
+// Active nav link
+const sections = document.querySelectorAll('section[id], div[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
